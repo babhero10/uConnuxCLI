@@ -1,15 +1,21 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include "errors.h"
+
+/**
+ * @brief Structure to hold commands information.
+ * Define any command in the code.
+ */
 typedef struct {
-    const char *name;           // Command name (e.g., "scan")
-    const char *description;    // Brief description for help
-    int (*handler)(int argc, char **argv);  // Function to handle the command
+  const char *name;                      /**< Memory allocation failure */
+  const char *description;               /**< Brief description for help */
+  ErrorCode (*handler)(int argc, char **argv); /**< Function to handle the command */
 } Command;
 
-int scan_handler(int argc, char **argv);
-int pair_handler(int argc, char **argv);
-int help_handler(int argc, char **argv);
-int quit_handler(int argc, char **argv);
+void show_general_help();
+Command *find_command(const char *name);
+
+ErrorCode add_handler(int argc, char **argv);
 
 #endif

@@ -3,10 +3,26 @@
 #include <string.h>
 
 // Create a new logger instance and open the log file
-Logger *create_logger(const char *file_name) {
+Logger *create_logger() {
+
+  const char *home_dir = getenv("HOME");
+  if (home_dir == NULL) {
+    fprintf(stderr, "Error: HOME environment variable not set.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  char log_path[1024];
+  int written =
+      snprintf(log_path, sizeof(log_path), "%s/uconnux/trace.log", home_dir);
+
+  if (written < 0 || (size_t)written >= sizeof(log_path)) {
+    fprintf(stderr, "Error: Log path too long or snprintf error.\n");
+    exit(EXIT_FAILURE);
+  }
+
   Logger *logger = (Logger *)malloc(sizeof(Logger));
   logger->event_count = 0;
-  logger->log_file = fopen(file_name, "a+"); // Open the log file in append mode
+  logger->log_file = fopen(log_path, "a+"); // Open the log file in append mode
   if (logger->log_file == NULL) {
     return NULL;
   }

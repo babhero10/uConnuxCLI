@@ -9,7 +9,8 @@ typedef enum {
     ERR_NULL_POINTER,           /**< Access Null pointer */
     ERR_MEMORY_ALLOCATION,      /**< Memory allocation failure */
     ERR_INVALID_ARGUMENT,       /**< Invalid argument provided */
-    ERR_GLOB_FAILURE            /**< Glob operation failure */
+    ERR_GLOB_FAILURE,           /**< Glob operation failure */
+    ERR_EXIT                    /**< Just to know when to exit */
 } ErrorCode;
 
 #endif

@@ -53,7 +53,7 @@ typedef struct Logger_struct {
  * Initializes the logger with zero events and opens the log file.
  * @return A new Logger instance.
  */
-Logger *create_logger(const char *file_name);
+Logger *create_logger();
 
 /**
  * @brief Add an event to the logger.
