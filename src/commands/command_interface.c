@@ -4,6 +4,7 @@
 
 Command commands[] = {
     {"add", "Add new port for discovery", add_handler},
+    // {"ls", "Show all ports/devices added/discovered", ls_handler},
     {NULL, NULL, NULL},
 };
 

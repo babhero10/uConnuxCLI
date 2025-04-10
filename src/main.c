@@ -1,11 +1,18 @@
 #include "../include/args_parser.h"
 #include "../include/commands.h"
 #include "../include/logger.h"
+#include "../include/uconnux.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main(void) {
+  UConnuxHandler *uconnux_handler = (UConnuxHandler *)malloc(sizeof(UConnuxHandler));
+  if (uconnux_handler_init(uconnux_handler) != ERR_SUCCESS) {
+    fprintf(stderr, "Something went wrong!\n");
+    exit(1);
+  }
+
   int my_argc;
   char **my_argv = NULL;
   Logger *logger = NULL;
@@ -43,8 +50,8 @@ int main(void) {
          "                                 ▌\n");
   printf("▐ \033[0;37mMulti-MCU Comms CLI for Linux\033[0m                     "
          "                ▌\n");
-  printf("▐ \033[0;37mInterfaces:\033[0m \033[1;33mUART\033[0m \033[0;37m+ "
-         "more coming\033[0m                                    ▌\n");
+  printf("▐ \033[0;37mInterfaces:\033[0m \033[1;33mUSB\033[0m \033[0;37m+ "
+         "wifi is coming\033[0m                                  ▌\n");
   printf("▐\033[1;"
          "36m▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
          "▄\033[0m▌\n");
@@ -53,7 +60,6 @@ int main(void) {
   while (1) {
     // Print prompt
     printf("▐\033[1;36m uConnux \033[0m⚡ \033[1;32m> \033[0m");
-
     fflush(stdout);
 
     // Read input
@@ -85,7 +91,7 @@ int main(void) {
           fprintf(stderr, "Unknown command: %s\n", my_argv[0]);
           show_general_help();
         } else {
-          cmd->handler(my_argc, my_argv);
+          cmd->handler(my_argc, my_argv, uconnux_handler);
         }
       }
     }
@@ -96,6 +102,7 @@ int main(void) {
   }
 
   close_logger(logger);
+  uconnux_handler_destory(uconnux_handler);
 
   return 0;
 }
