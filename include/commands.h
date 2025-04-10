@@ -19,6 +19,6 @@ Command *find_command(const char *name);
 void show_general_help();
 
 ErrorCode add_handler(int argc, char **argv, UConnuxHandler *uconnux_handler);
-// ErrorCode ls_handler(int argc, char **argv, UConnuxHandler *uconnux_handler);
+ErrorCode ls_handler(int argc, char **argv, UConnuxHandler *uconnux_handler);
 
 #endif
