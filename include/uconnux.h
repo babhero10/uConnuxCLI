@@ -12,6 +12,7 @@
 #define UCONNUX_H
 
 #include "errors.h" // Assumed to define ErrorCode enum (ERR_SUCCESS, ERR_NULL_ARGUMENT, etc.)
+#include "style.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -104,5 +105,13 @@ ErrorCode uconnux_handler_init(UConnuxHandler *handler);
  * @return ErrorCode ERR_NULL_ARGUMENT if `handler` pointer is NULL.
  */
 ErrorCode uconnux_handler_destory(UConnuxHandler *handler);
+
+/**
+ * @brief Gets the status string value.
+ *
+ * @param  devices status value.
+ * @return status string value.
+ */
+const char *get_status_str(DeviceStatus status);
 
 #endif // UCONNUX_H

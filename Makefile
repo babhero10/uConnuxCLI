@@ -3,7 +3,7 @@ CC = gcc
 # Add -MMD -MP to generate dependency files (.d)
 # Add -I$(SRC_DIR) if headers might be alongside source files in subdirs
 CFLAGS = -Wall -I./include -I$(SRC_DIR) -MMD -MP
-LDFLAGS =
+LDFLAGS = -lreadline
 
 # Directories
 SRC_DIR = ./src

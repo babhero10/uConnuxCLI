@@ -4,6 +4,7 @@
 #include "errors.h"
 #include "uconnux.h"
 
+
 /**
  * @brief Structure to hold commands information.
  * Define any command in the code.
@@ -16,6 +17,8 @@ typedef struct {
 } Command;
 
 Command *find_command(const char *name);
+Command *get_commands();
+int number_of_commands();
 void show_general_help();
 
 ErrorCode add_handler(int argc, char **argv, UConnuxHandler *uconnux_handler);
