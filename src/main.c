@@ -66,8 +66,8 @@ int main(void) {
          "                                 ▌\n");
   printf("▐ \033[0;37mMulti-MCU Comms CLI for Linux\033[0m                     "
          "                ▌\n");
-  printf("▐ \033[0;37mInterfaces:\033[0m \033[1;33mUSB\033[0m \033[0;37m+ "
-         "wifi is coming\033[0m                                  ▌\n");
+  printf("▐ \033[0;37mInterfaces:\033[0m \033[1;33mSerial\033[0m \033[0;37m+ "
+         "wifi is coming\033[0m                               ▌\n");
   printf("▐\033[1;"
          "36m▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄"
          "▄\033[0m▌\n");
