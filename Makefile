@@ -1,10 +1,10 @@
 # Compiler and flags for C++
 CXX = g++ # Use g++ for C++
 # Use CXXFLAGS for C++ compilation flags
-# Add a C++ standard, e.g., -std=c++17
+# Add a C++ standard, e.g., -std=c++14
 # Add -MMD -MP to generate dependency files (.d)
 # Add -I$(SRC_DIR) if headers might be alongside source files in subdirs
-CXXFLAGS = -Wall -Wextra -std=c++17 -I./include -I$(SRC_DIR) -MMD -MP
+CXXFLAGS = -Wall -Wextra -std=c++14 -I./include -I$(SRC_DIR) -MMD -MP
 # LDFLAGS remain mostly the same, but use CXX for linking to include std C++ libs automatically
 LDFLAGS = -lreadline
 

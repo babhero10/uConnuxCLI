@@ -1,5 +1,6 @@
 #ifndef THEME_HPP // Use .hpp extension convention (optional)
 #define THEME_HPP
+#include <string>
 
 namespace term_style { // Use a namespace to avoid polluting global scope
 
@@ -66,7 +67,7 @@ namespace term_style { // Use a namespace to avoid polluting global scope
 // file) If they are simple enough, they could potentially become inline
 // functions here.
 void printIntro();
-void printPrompt();
+const std::string getPromptString();
 void clearScreen();
 
 #endif // THEME_HPP

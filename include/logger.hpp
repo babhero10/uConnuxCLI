@@ -7,7 +7,7 @@
 #include <string>
 #include <utility> // For std::forward
 
-enum class LogLevel { INFO, SUCCESS, WARNING, ERROR, DEBUG };
+enum class LogLevel { INFO, SUCCESS, WARNING, FATAL, DEBUG };
 
 class Logger {
 private:
@@ -42,7 +42,7 @@ public:
       output_stream << "▐ " << std::flush;
     }
 
-    output_stream << levelToString(level) << " "; // Calls implementation
+    // output_stream << levelToString(level) << " "; // Calls implementation
 
     std::stringstream ss;
     using List = int[];
@@ -57,15 +57,17 @@ public:
   template <typename... Args> void success(Args &&...args) {
     log(LogLevel::SUCCESS, std::forward<Args>(args)...);
   }
-  template <typename... Args> void warning(Args &&...args) {
+  template <typename... Args> void warn(Args &&...args) {
     log(LogLevel::WARNING, std::forward<Args>(args)...);
   }
-  template <typename... Args> void error(Args &&...args) {
-    log(LogLevel::ERROR, std::forward<Args>(args)...);
+  template <typename... Args> void fatal(Args &&...args) {
+    log(LogLevel::FATAL, std::forward<Args>(args)...);
   }
   template <typename... Args> void debug(Args &&...args) {
     log(LogLevel::DEBUG, std::forward<Args>(args)...);
   }
 };
+
+extern Logger logger;
 
 #endif // LOGGER_HPP

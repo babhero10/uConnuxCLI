@@ -4,6 +4,7 @@
 
 // Provide the implementation for non-template methods
 // Use ClassName:: to specify the method belongs to the Logger class
+Logger logger;
 
 Logger::Logger(std::ostream &stream, LogLevel level, bool prefix)
     : output_stream(stream), min_level(level), show_prefix(prefix) {
@@ -30,7 +31,7 @@ std::string Logger::setColor(LogLevel level) const {
     return std::string(THEME_SUCCESS);
   case LogLevel::WARNING:
     return std::string(THEME_WARNING);
-  case LogLevel::ERROR:
+  case LogLevel::FATAL:
     return std::string(THEME_ERROR);
   case LogLevel::DEBUG:
     return std::string(DIM);
@@ -49,8 +50,8 @@ std::string Logger::levelToString(LogLevel level) const {
     return "[SUCCESS] " + std::string(RESET);
   case LogLevel::WARNING:
     return "[WARN] " + std::string(RESET);
-  case LogLevel::ERROR:
-    return "[ERROR]" + std::string(RESET);
+  case LogLevel::FATAL:
+    return "[FATAL]" + std::string(RESET);
   case LogLevel::DEBUG:
     return "[DEBUG]" + std::string(RESET);
   default:

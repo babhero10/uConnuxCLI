@@ -1,74 +1,155 @@
-#include <iostream> // For std::cout, std::cin, std::cerr
-#include <string>   // For std::string
-#include <vector>   // For std::vector
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <map> // For completion iterator
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <string>
+#include <vector>
 
-// Include the header for our argument parser
-#include "../include/args_parser.hpp"
-#include "../include/theme.hpp"
+// --- Your Core Includes ---
+#include "../include/args_parser.hpp" // Keeping for now, see notes
 #include "../include/logger.hpp"
+#include "../include/theme.hpp"
 
-Logger logger;
+// --- Command System Includes ---
+#include "../include/command_registry.hpp" // Our new registry header
+#include "../include/icommand.hpp"         // Defines ICommand and status codes
+
+// --- Concrete Command Includes ---
+#include "../include/commands/add.hpp"   // Assuming path
+#include "../include/commands/clear.hpp" // Assuming path
+#include "../include/commands/exit.hpp"  // Assuming path
+#include "../include/commands/help.hpp"  // The new help command
+
+// --- Logger Declaration ---
+extern Logger logger; // Assume defined elsewhere (e.g., logger.cpp or another
+                      // source file)
+
+// --- Global Pointer for Readline Completion ---
+static CommandRegistry *g_command_registry_ptr = nullptr;
+
+// --- Completion Logic (Using Command Registry) ---
+
+// Generator function using the command registry
+char *command_registry_generator(const char *text, int state) {
+  static std::map<std::string, ICommand *>::const_iterator it;
+
+  if (!g_command_registry_ptr)
+    return nullptr;
+
+  if (state == 0) {
+    it = g_command_registry_ptr->getCommands().cbegin(); // Use cbegin()
+  }
+
+  while (it != g_command_registry_ptr->getCommands().cend()) { // Use cend()
+    const std::string &command_name = it->first;
+    it++; // Advance for next call BEFORE returning
+
+    if (command_name.rfind(text, 0) == 0) { // Efficient prefix check
+      return strdup(command_name.c_str());  // Readline frees this
+    }
+  }
+  return nullptr; // No more matches
+}
+
+// Main completion function (Unchanged from previous correct version)
+char **command_completion(const char *text, int start, [[maybe_unused]]int end) {
+  rl_attempted_completion_over = 1;
+  if (start == 0) {
+    return rl_completion_matches(text, command_registry_generator);
+  }
+  return nullptr;
+}
+
+// --- Main Application ---
 
 int main() {
-  std::string line; // Variable to hold the line read from the user
-  // Define the prompt string (Readline handles printing it)
+  // --- Instantiate and Register Commands ---
+  CommandRegistry registry;
+  g_command_registry_ptr = &registry; // Set global pointer for completion
+
+  try {
+    // Register commands - AddCommand/ClearCommand might need specific setup
+    // depending on how they get dependencies or perform actions.
+    registry.registerCommand<ExitCommand>();
+    registry.registerCommand<ClearCommand>(); // Assumes it calls clearScreen()
+                                              // or similar
+    registry.registerCommand<AddCommand>(); // Assumes AddCommand parses its own
+                                            // args
+
+    // IMPORTANT: Register HelpCommand, passing the registry itself
+    registry.registerCommand<HelpCommand>(registry);
+
+    logger.info("Commands registered successfully.");
+
+  } catch (const std::exception &e) {
+    logger.fatal("Failed to register commands during startup: ", e.what());
+    return 1;
+  }
+  // --- End Command Registration ---
+
+  // --- Readline Initialization ---
+  rl_attempted_completion_function = command_completion;
+  // --------------------------------
 
   printIntro();
 
-  // Loop indefinitely until the user types 'exit' or hits EOF
+  char *line_c_str = nullptr;
   while (true) {
-    printPrompt();
-    // Read a whole line from the standard input (keyboard)
-    // std::getline returns false on EOF (Ctrl+D) or error
-    if (!std::getline(std::cin, line)) {
-      std::cout << std::endl; // Print a newline for cleaner exit on Ctrl+D
-      break;                  // Exit the loop if input fails (e.g., EOF)
+    if (line_c_str) {
+      free(line_c_str);
+      line_c_str = nullptr;
     }
 
-    // If the user just pressed Enter, the line is empty, so skip parsing
+    line_c_str = readline(
+        getPromptString().c_str()); // Use your existing prompt function
+
+    if (line_c_str == nullptr) { // EOF (Ctrl+D)
+      std::cout << std::endl;
+      break;
+    }
+
+    std::string line(line_c_str);
+
+    // Trim whitespace (using your existing method or similar)
+    line.erase(0, line.find_first_not_of(" \t\n\r"));
+    line.erase(line.find_last_not_of(" \t\n\r") + 1);
+
+    if (!line.empty()) {
+      add_history(line_c_str);
+    }
+
     if (line.empty()) {
-      continue; // Go back to the start of the loop for the next prompt
+      continue;
     }
 
-    // --- Try to parse the line ---
     try {
-      // Call our C++ parser function. It returns a vector of strings.
-      // This handles splitting, quotes, and wildcard expansion (*, ?, []).
-      std::vector<std::string> arguments = parseCommandLine(line);
-
-      // Check if parsing resulted in any arguments
-      // (e.g., the input might have been just whitespace)
+      std::vector<std::string> arguments =
+          parseCommandLine(line); // Use your existing parser
       if (arguments.empty()) {
-        continue; // Nothing to process, get next input
-      }
-
-      // --- Process the arguments ---
-
-      // Simple built-in command: check if the first argument is "exit"
-      if (arguments[0] == "exit") {
-        break; // Exit the while loop
-      } else if (arguments[0] == "clear") {
-        clearScreen();
         continue;
       }
 
-      // Otherwise, print the parsed arguments
-      logger.info("Parsed Arguments (", arguments.size(), "):");
-      int i = 0;
-      // Loop through each string in the 'arguments' vector
-      for (const std::string &arg : arguments) {
-        // Print the index and the argument surrounded by brackets
-        logger.success( "  Arg ", i++, ": [", arg, "]");
+      int result = registry.executeCommand(arguments);
+
+      if (COMMAND_EXIT_REQUESTED == result) {
+        break; // Exit the loop
       }
 
     } catch (const std::exception &e) {
-      // If parseCommandLine threw an error (e.g., std::bad_alloc), catch it
-      std::cerr << "Error during parsing: " << e.what() << '\n';
-      // Continue the loop to allow the user to enter another command
+      logger.fatal("Error in main loop: ", e.what());
+    } catch (...) {
+      logger.fatal("Unknown exception in main loop.");
     }
+  }
 
-  } // End of the while loop
+  if (line_c_str) {
+    free(line_c_str);
+  }
+
+  g_command_registry_ptr = nullptr; // Clear global pointer
 
   logger.success("See you later! ⚡");
-  return 0; // Indicate successful execution
+  return 0;
 }

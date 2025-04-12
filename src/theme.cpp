@@ -59,15 +59,11 @@ void printIntro() {
       << std::flush; // Flush ensures output appears immediately
 }
 
-void printPrompt() {
+const std::string getPromptString() {
   using namespace term_style;
   // Example prompt construction - matches the C version more closely now
-  std::cout << THEME_HEADER << "▐" << BOLD << CYAN << " uConnux " << RESET << "⚡ " << BOLD
-            << GREEN << "> " << RESET;
-  // Flush the prompt output so the user sees it before typing
-  std::cout << std::flush;
+  return std::string(THEME_HEADER) + "▐" + BOLD + CYAN + " uConnux " + RESET +
+         "⚡ " + BOLD + GREEN + "> " + RESET;
 }
 
-void clearScreen() {
-  std::cout << "\033[2J\033[1;1H";
-}
+void clearScreen() { std::cout << "\033[2J\033[1;1H"; }
