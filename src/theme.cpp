@@ -62,8 +62,8 @@ void printIntro() {
 const std::string getPromptString() {
   using namespace term_style;
   // Example prompt construction - matches the C version more closely now
-  return std::string(THEME_HEADER) + "▐" + BOLD + CYAN + " uConnux " + RESET +
-         "⚡ " + BOLD + GREEN + "> " + RESET;
+  return std::string(THEME_HEADER) + "▐" + BOLD + CYAN + " uConnux " +
+         "⚡ " + BOLD + "> " + RESET;
 }
 
 void clearScreen() { std::cout << "\033[2J\033[1;1H"; }

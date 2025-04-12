@@ -81,8 +81,6 @@ int main() {
     // IMPORTANT: Register HelpCommand, passing the registry itself
     registry.registerCommand<HelpCommand>(registry);
 
-    logger.info("Commands registered successfully.");
-
   } catch (const std::exception &e) {
     logger.fatal("Failed to register commands during startup: ", e.what());
     return 1;
